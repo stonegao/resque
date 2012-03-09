@@ -118,7 +118,8 @@ module Resque
         if not @paused and job = reserve
           log "got: #{job.inspect}"
           run_hook :before_fork, job
-          working_on job
+          # we do not need to log the status for every message
+          #working_on job
 
           if @child = fork
             rand # Reseeding
@@ -241,6 +242,7 @@ module Resque
       end
     end
 
+          #As before, we don't need per message worker status
     # Registers the various signal handlers a worker responds to.
     #
     # TERM: Shutdown immediately, stop processing jobs.
@@ -384,7 +386,9 @@ module Resque
     # and tells Redis we processed a job.
     def done_working
       processed!
-      redis.del("worker:#{self}")
+
+      #As before, we don't need per message worker status
+      #redis.del("worker:#{self}")
     end
 
     # How many jobs has this worker processed? Returns an int.
@@ -395,7 +399,8 @@ module Resque
     # Tell Redis we've processed a job.
     def processed!
       Stat << "processed"
-      Stat << "processed:#{self}"
+      # less redis ops
+      #Stat << "processed:#{self}"
     end
 
     # How many failed jobs has this worker seen? Returns an int.

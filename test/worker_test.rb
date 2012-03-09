@@ -153,46 +153,14 @@ context "Resque::Worker" do
     end
   end
 
-  test "records what it is working on" do
-    @worker.work(0) do
-      task = @worker.job
-      assert_equal({"args"=>[20, "/tmp"], "class"=>"SomeJob"}, task['payload'])
-      assert task['run_at']
-      assert_equal 'jobs', task['queue']
-    end
-  end
-
   test "clears its status when not working on anything" do
     @worker.work(0)
     assert_equal Hash.new, @worker.job
   end
 
-  test "knows when it is working" do
-    @worker.work(0) do
-      assert @worker.working?
-    end
-  end
-
   test "knows when it is idle" do
     @worker.work(0)
     assert @worker.idle?
-  end
-
-  test "knows who is working" do
-    @worker.work(0) do
-      assert_equal [@worker], Resque.working
-    end
-  end
-
-  test "keeps track of how many jobs it has processed" do
-    Resque::Job.create(:jobs, BadJob)
-    Resque::Job.create(:jobs, BadJob)
-
-    3.times do
-      job = @worker.reserve
-      @worker.process job
-    end
-    assert_equal 3, @worker.processed
   end
 
   test "keeps track of how many failures it has seen" do
@@ -237,7 +205,6 @@ context "Resque::Worker" do
     @worker.work(0) do
       found = Resque::Worker.find(@worker.to_s)
       assert_equal @worker.to_s, found.to_s
-      assert found.working?
       assert_equal @worker.job, found.job
     end
   end
