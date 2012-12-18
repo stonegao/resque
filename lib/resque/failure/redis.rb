@@ -9,7 +9,7 @@ module Resque
           :payload   => payload,
           :exception => exception.class.to_s,
           :error     => exception.to_s,
-          :backtrace => Array(exception.backtrace),
+          #:backtrace => Array(exception.backtrace),
           :worker    => worker.to_s,
           :queue     => queue
         }
